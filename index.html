@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Camera to ASCII</title>
+    <audio autoplay loop>
+  <source src="Cordae-Two-Tens-ft-Anderson-Paak-(BazeMack.com).mp3" type="audio/mpeg">
+</audio>
+        <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: black; /* set the background color of the body to black */
+      }
+#ascii-art {
+  font-family: monospace;
+  white-space: pre;
+  text-align: center;
+  height: 100vh;
+  background-color: black;
+  color: transparent;
+  background-image: linear-gradient(to bottom, #ffd700, #4169E1, #ff7f50);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+            #container {
+    position: relative;
+  }
+
+  #my-gif {
+    position: absolute;
+    top: 500px;
+    right: calc(50% + 75px);
+    width: 200px;
+    height: auto;
+    z-index: -1;
+          }
+  #my-gif2 {
+    position: absolute;
+    top: 500px;
+    left: calc(50% + 75px);
+      width: 200px;
+    height: auto;
+    z-index: -1;
+          }
+  #discoball {
+    position: absolute;
+    top: 100px;
+    left: calc(50% - 125px);
+      width: 250px;
+    height: auto;
+    z-index: -1;
+  }
+  #purpLaserLeft {
+    position: absolute;
+    top: 40px;
+    left: 150px;
+    width: 750px;
+    height: auto;
+    z-index: -1;
+    opacity: .5;
+    transform: rotate(15deg);
+  }
+  #purpLaserRight {
+    position: absolute;
+    top: 40px;
+    left: calc(50% - 150px);
+    width: 750px;
+    height: auto;
+    z-index: -1;
+    opacity: .5;
+    transform: rotate(-15deg);
+  }
+  /* #lightSaberPepe {
+    position: absolute;
+    top: calc(100% - 50px);
+    z-index: -1;
+  } */
+
+
+          
+    </style>
+  </head>
+  <body>
+    <div id="ascii-container">
+  <pre id="ascii-art"></pre>
+</div>
+    <video id="video" autoplay></video>
+    <pre id="ascii-art"></pre>
+<canvas id="white-bar"></canvas>
+ <!-- <img id="my-gif" src="https://thumbs.gfycat.com/AgitatedLiveAgouti-size_restricted.gif" alt="A GIF"> -->
+ <!-- <img id="my-gif2" src="https://thumbs.gfycat.com/AgitatedLiveAgouti-size_restricted.gif" alt="A GIF"> -->
+ <!-- <img id="discoball" src="https://bestanimations.com/media/mirror-balls/645938848animated-disco-ball-5-2.gif" alt = "A GIF"> -->
+ <img id = "my-gif" src="dancingPepe.gif" alt="A GIF"> 
+ <img id = "my-gif2" src="dancingPepe.gif" alt="A GIF">
+ <img id = "discoball" src="discoball.gif" alt="A GIF">
+ <img id = "purpLaserLeft" src="purpLaserLeft.gif" alt="A GIF">
+ <img id = "purpLaserRight" src="purpLaserRight.gif" alt="A GIF">
+ <!-- <img id = "lightSaberPepe" src="lightsaberPepe.gif" alt="A GIF"> -->
+    <script>      
+      
+// Get the video element from the DOM
+const video = document.createElement("video");
+document.body.appendChild(video);
+
+// Create a canvas element to draw the video frame on
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
+
+// Set the width and height of the canvas to match the video dimensions
+video.addEventListener("loadedmetadata", () => {
+  canvas.width = video.videoWidth * 3;
+  canvas.height = video.videoHeight * (3/2);
+});
+
+function drawWhiteBar() {
+  whiteBarCtx.fillStyle = "white";
+  whiteBarCtx.fillRect(0, 0, whiteBarCanvas.width, whiteBarCanvas.height);
+}
+
+video.addEventListener("loadedmetadata", () => {
+  // Set the width and height of the canvas and white bar elements to match the video dimensions
+  canvas.width = video.videoWidth * 3;
+  canvas.height = video.videoHeight * (3/2);
+  whiteBarCanvas.width = canvas.width;
+  drawWhiteBar();
+});      
+      
+// Get the ASCII characters to use for the conversion
+const asciiChars = ["@", "#", "S", "%", "?", "*", "+", ";", ":", ",", "."];
+
+// Calculate the aspect ratio of the video
+let videoAspectRatio = 1;
+video.addEventListener("loadedmetadata", () => {
+  videoAspectRatio = video.videoWidth / video.videoHeight;
+});
+      
+// Calculate the font size and characters per row for the ASCII art
+const fontSize = 10;
+const charsPerRow = 150;
+
+// Convert each video frame to ASCII and display it on the page
+function convertToAscii() {
+  // Draw the current video frame on the canvas
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  // Get the pixel data from the canvas
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+  // Calculate the ASCII art dimensions to match the video aspect ratio
+  const asciiWidth = charsPerRow;
+  const asciiHeight = Math.floor(canvas.height * videoAspectRatio / fontSize);
+
+  // Create an empty string to store the ASCII art
+  let asciiArt = "";
+
+  // Loop through each row of ASCII characters in the image
+  for (let y = 0; y < asciiHeight; y++) {
+    // Loop through each ASCII character in the row
+    for (let x = 0; x < asciiWidth; x++) {
+      // Calculate the pixel index in the image data array
+      const pixelX = Math.floor(x * videoAspectRatio * fontSize);
+      const pixelY = Math.floor(y * fontSize);
+      const pixelIndex = (pixelY * canvas.width + pixelX) * 4;
+
+      // Calculate the grayscale value of the pixel
+      const grayscaleValue = (imageData[pixelIndex] + imageData[pixelIndex + 1] + imageData[pixelIndex + 2]) / 3;
+
+      // Map the grayscale value to an ASCII character, or use a default character if the index is undefined
+      const asciiIndex = Math.floor((grayscaleValue / 255) * asciiChars.length);
+      const asciiChar = asciiChars[asciiIndex] || " ";
+
+      // Add the ASCII character to the ASCII art string
+      asciiArt += asciiChar;
+    }
+    asciiArt += "\n"; // Add a newline character at the end of each row
+  }
+
+  // Set the font size and display the ASCII art on the page
+  document.getElementById("ascii-art").style.fontSize = fontSize + "px";
+  document.getElementById("ascii-art").textContent = asciiArt;
+
+  // Call this function again to create a new frame of ASCII art
+  requestAnimationFrame(convertToAscii);
+}
+
+// Start the video stream and call the conversion function
+navigator.mediaDevices
+  .getUserMedia({ video: true })
+  .then((stream) => {
+    video.srcObject = stream;
+    video.play();
+    convertToAscii();
+  })
+  .catch((error) => {
+    console.error("Error accessing camera:", error);
+  });
+    </script>
+
+  </body>
+</html>
